@@ -7,6 +7,7 @@ context.initialize('--mode=cpu')
 
 # create a simple cubic lattice of 125 particles
 system = init.create_lattice(unitcell=lattice.sc(a=2.0), n=5)
+snap_0 = system.take_snapshot(all=True)
 
 # specify Lennard-Jones interactions between particle pairs
 nl = md.nlist.cell()
@@ -22,16 +23,22 @@ md.integrate.brownian(group=all, kT=0.1, seed=987)
 run(2e5)
 
 # take a snapshot of the current state of the system and save the particle positions
-snapshot = system.take_snapshot(all=True)
-pos = snapshot.particles.position
+snap_1 = system.take_snapshot(all=True)
+pos_0 = snap_0.particles.position
+pos_1 = snap_1.particles.position
 
 # a visual representation using matplotlib
-import numpy as np
+# import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-for part in pos:
-    ax.scatter(part[0], part[1], part[2], c='y')
+ax_0 = fig.add_subplot(121, projection='3d')
+for part in pos_0:
+    ax_0.scatter(part[0], part[1], part[2], c='y')
+
+ax_1 = fig.add_subplot(122, projection='3d')
+for part in pos_1:
+    ax_1.scatter(part[0], part[1], part[2], c='y')
+
 plt.show()
