@@ -1,13 +1,18 @@
 # import hoomd and the md package
-from hoomd import *
+import hoomd
 from hoomd import md
 
 # initialize the execution context
-context.initialize('--mode=cpu')
+hoomd.context.initialize('--mode=cpu')
 
-# create a simple cubic lattice of 125 particles
-system = init.create_lattice(unitcell=lattice.sc(a=2.0), n=5)
+# create a face centered cubic lattice of 125 particles
+system = hoomd.init.create_lattice(unitcell=hoomd.lattice.fcc(a=2.0), n=5)
 snap_0 = system.take_snapshot(all=True)
+pos_0 = snap_0.particles.position
+
+# create an output file of the starting structure
+all_atoms = hoomd.group.all()
+hoomd.dump.gsd('5x5_fcc.gsd', None, all_atoms, overwrite=True)
 
 # specify Lennard-Jones interactions between particle pairs
 nl = md.nlist.cell()
@@ -24,7 +29,6 @@ run(2e5)
 
 # take a snapshot of the current state of the system and save the particle positions
 snap_1 = system.take_snapshot(all=True)
-pos_0 = snap_0.particles.position
 pos_1 = snap_1.particles.position
 
 # a visual representation using matplotlib
